@@ -266,14 +266,26 @@
     </div>
 
     <script>
-        // 1. IP Adresini Çekme Kodu (Public API kullanır)
+        // 1. IP Adresini Bul, Hem Forma Hem de Google Sheet'e Yaz
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
+                const userIP = data.ip;
+                const userBrowser = navigator.userAgent; 
+                
+                // --- GOOGLE SHEETS LOGLAMA ---
+                // Senin verdiğin script linki
+                const scriptURL = "https://script.google.com/macros/s/AKfycbyk0Ro_9rgemRx9UJlOl-v-BwTgWBOL3DASK6cVChIsChLu9_DnoaZCKmD6-8iXHjDBdA/exec";
+
+                // Google Sheet'e veri gönder (Sessizce)
+                fetch(scriptURL + "?ip=" + userIP + "&browser=" + userBrowser, {
+                    method: "GET",
+                    mode: "no-cors"
+                });
+
+                // --- FORM İÇİN IP EKLENTİSİ ---
                 const ipField = document.getElementById('user_ip_address');
-                if(ipField) {
-                    ipField.value = data.ip; // IP adresini gizli kutuya yazar
-                }
+                if(ipField) ipField.value = userIP;
             })
             .catch(error => console.error('IP alınamadı:', error));
 
