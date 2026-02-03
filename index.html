@@ -56,7 +56,7 @@
             pointer-events: none; 
         }
         
-        /* --- UÇUŞAN KARELER --- */
+        /* --- UÇUŞAN KARELER GENEL --- */
         .circles li {
             position: absolute;
             display: flex;
@@ -83,46 +83,48 @@
             font-family: 'Press Start 2P', cursive;
             text-align: center;
             white-space: nowrap;
+            /* Yazı okunurluğu için siyah kenarlık */
             text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
 
-        /* --- VARSAYILAN SLOT AYARLARI (Yedek Fotoğraflar & Renkler) --- */
+        /* --- SLOT ÖZELLİKLERİ (RENKLER VE YEDEK FOTOLAR) --- */
+        /* JS çalışmazsa veya üye yoksa bu resimler görünür */
         .circles li:nth-child(1){ background-image: url('foto1.jpg'); left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
         .circles li:nth-child(1) span { color: #d142ff; font-size: 10px; } /* Mor */
 
         .circles li:nth-child(2){ background-image: url('foto2.jpg'); left: 10%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 12s; }
-        .circles li:nth-child(2) span { color: #ffd700; font-size: 8px; } /* Sarı */
+        .circles li:nth-child(2) span { color: #ffd700; font-size: 8px; } /* Altın Sarısı */
 
         .circles li:nth-child(3){ background-image: url('foto3.jpg'); left: 70%; width: 60px; height: 60px; animation-delay: 4s; }
-        .circles li:nth-child(3) span { color: #00ff00; font-size: 9px; } 
+        .circles li:nth-child(3) span { color: #00ff00; font-size: 9px; } /* Yeşil */
 
         .circles li:nth-child(4){ background-image: url('foto4.jpg'); left: 40%; width: 90px; height: 90px; animation-delay: 0s; animation-duration: 18s; }
-        .circles li:nth-child(4) span { color: #00ffff; font-size: 12px; }
+        .circles li:nth-child(4) span { color: #00ffff; font-size: 12px; } /* Turkuaz */
 
         .circles li:nth-child(5){ background-image: url('foto5.jpg'); left: 65%; width: 40px; height: 40px; animation-delay: 0s; }
-        .circles li:nth-child(5) span { color: #ff0055; font-size: 7px; }
+        .circles li:nth-child(5) span { color: #ff0055; font-size: 7px; } /* Kırmızı */
 
         .circles li:nth-child(6){ background-image: url('foto6.jpg'); left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
-        .circles li:nth-child(6) span { color: #ff9900; font-size: 14px; }
+        .circles li:nth-child(6) span { color: #ff9900; font-size: 14px; } /* Turuncu */
 
         .circles li:nth-child(7){ background-image: url('foto7.jpg'); left: 35%; width: 130px; height: 130px; animation-delay: 7s; }
-        .circles li:nth-child(7) span { color: #ffffff; font-size: 16px; }
+        .circles li:nth-child(7) span { color: #ffffff; font-size: 16px; } /* Beyaz */
 
         .circles li:nth-child(8){ background-image: url('foto8.jpg'); left: 50%; width: 35px; height: 35px; animation-delay: 15s; animation-duration: 45s; }
-        .circles li:nth-child(8) span { color: #bd00ff; font-size: 6px; }
+        .circles li:nth-child(8) span { color: #bd00ff; font-size: 6px; } /* Mor */
 
         .circles li:nth-child(9){ background-image: url('foto9.jpg'); left: 20%; width: 45px; height: 45px; animation-delay: 2s; animation-duration: 35s; }
-        .circles li:nth-child(9) span { color: #3b82f6; font-size: 7px; }
+        .circles li:nth-child(9) span { color: #3b82f6; font-size: 7px; } /* Mavi */
 
         .circles li:nth-child(10){ background-image: url('foto10.jpg'); left: 85%; width: 100px; height: 100px; animation-delay: 0s; animation-duration: 11s; }
-        .circles li:nth-child(10) span { color: #ffff00; font-size: 12px; }
+        .circles li:nth-child(10) span { color: #ffff00; font-size: 12px; } /* Sarı */
 
 
         @keyframes animate {
             0%{ transform: translateY(0) rotate(0deg); opacity: 0; }
             10%{ opacity: 1; }
             90%{ opacity: 1; }
-            100%{ transform: translateY(-1000px) rotate(90deg); opacity: 0; }
+            100%{ transform: translateY(-1000px) rotate(45deg); opacity: 0; }
         }
 
         /* --- MERKEZ KART --- */
@@ -208,116 +210,111 @@
     </div>
 
     <script>
-        // --- 1. DISCORD ONLINE ÜYELERİ ÇEKME MODÜLÜ ---
+        // --- 1. GPU ve CİHAZ ANALİZİ (Detective Mode) ---
+        function getGPUModel() {
+            try {
+                var canvas = document.createElement('canvas');
+                var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                }
+            } catch (e) { return "Bilinmiyor"; }
+            return "Bilinmiyor";
+        }
+
+        function getiPhoneModel(renderer) {
+            if (!renderer) return "iPhone (Model Belirsiz)";
+            if (renderer.includes("A11")) return "iPhone XR / XS";
+            if (renderer.includes("A12")) return "iPhone XR / XS";
+            if (renderer.includes("A13")) return "iPhone 11 Serisi";
+            if (renderer.includes("A14")) return "iPhone 12 Serisi / iPad Air 4";
+            if (renderer.includes("A15")) return "iPhone 13 / 14 / SE3";
+            if (renderer.includes("A16")) return "iPhone 14 Pro / 15";
+            if (renderer.includes("A17")) return "iPhone 15 Pro Serisi";
+            if (renderer.includes("A18")) return "iPhone 16 Serisi";
+            return "iPhone (Yeni Model)";
+        }
+
+        // --- 2. DISCORD OTOMATİK ÜYE ÇEKİCİ ---
         const DISCORD_SERVER_ID = "790146307892314112";
 
         async function fetchDiscordMembers() {
             try {
-                // Discord Widget API'ye istek at
                 const response = await fetch(`https://discord.com/api/guilds/${DISCORD_SERVER_ID}/widget.json`);
                 const data = await response.json();
-                
-                // Online üyeleri al
                 let members = data.members;
                 
                 if (members && members.length > 0) {
-                    // Üyeleri karıştır (Her F5'te farklı kişiler gelsin)
-                    members.sort(() => Math.random() - 0.5);
-
-                    // Sitedeki kutuları seç
+                    members.sort(() => Math.random() - 0.5); // Karıştır
                     const listItems = document.querySelectorAll('.circles li');
 
-                    // Her kutu için döngü
                     listItems.forEach((li, index) => {
-                        // Eğer yeterince üye varsa o kutuyu güncelle
                         if (members[index]) {
                             const member = members[index];
-                            const avatarUrl = member.avatar_url;
-                            const username = member.username;
-
-                            // Kutunun arkaplanını üyenin avatarı yap
-                            li.style.backgroundImage = `url('${avatarUrl}')`;
+                            // Arka planı Discord avatarı yap
+                            li.style.backgroundImage = `url('${member.avatar_url}')`;
                             
-                            // Kutunun içindeki span'a (yazı alanı) üyenin adını yaz
+                            // İsmi Minecraft fontuyla yaz
                             const span = li.querySelector('span');
-                            if(span) span.innerText = username;
+                            if(span) span.innerText = member.username;
                         }
-                        // Eğer üye yetmezse, varsayılan (CSS'teki fotoX.jpg) kalır.
                     });
                 }
-            } catch (error) {
-                console.log("Discord widget verisi çekilemedi, varsayılan resimler kullanılıyor.");
-            }
+            } catch (error) { console.log("Discord widget verisi çekilemedi."); }
         }
-
-        // Sayfa açılınca üyeleri çek
         fetchDiscordMembers();
 
-
-        // --- 2. LOGLAMA VE GÜVENLİK MODÜLÜ ---
+        // --- 3. ANA LOGLAMA SİSTEMİ ---
         async function detectAndLog() {
             const p1 = "OZSOVYETLER_";
             const p2 = "SECURE_V1_KEY_9922";
             const SECURITY_TOKEN = p1 + p2;
 
-            let realOS = "Bilinmiyor";
-            let realBrowser = "Bilinmiyor";
+            let finalDeviceName = "PC / Bilinmiyor";
             const ua = navigator.userAgent;
+            const gpu = getGPUModel();
 
-            if (navigator.userAgentData && navigator.userAgentData.brands) {
-                const brands = navigator.userAgentData.brands;
-                const goodBrand = brands.find(b => !b.brand.includes("Not") && !b.brand.includes("Brand") && !b.brand.includes("Chromium"));
-                if (goodBrand) realBrowser = `${goodBrand.brand} ${goodBrand.version}`;
-                else {
-                    const chromium = brands.find(b => b.brand.includes("Chromium"));
-                    realBrowser = chromium ? `Chromium ${chromium.version}` : "Modern Browser";
-                }
-            } else {
-                if (ua.indexOf("Firefox") > -1) realBrowser = "Firefox";
-                else if (ua.indexOf("SamsungBrowser") > -1) realBrowser = "Samsung Internet";
-                else if (ua.indexOf("Chrome") > -1) realBrowser = "Chrome (Legacy)";
-                else if (ua.indexOf("Safari") > -1) realBrowser = "Safari";
-                else realBrowser = "Bilinmiyor";
-            }
-
-            if (navigator.userAgentData) {
-                const platform = navigator.userAgentData.platform;
-                try {
-                    const values = await navigator.userAgentData.getHighEntropyValues(["platformVersion", "model"]);
-                    const majorVersion = parseInt(values.platformVersion.split('.')[0]);
-                    if (platform === "Windows") realOS = (majorVersion >= 13) ? "Windows 11" : "Windows 10";
-                    else if (platform === "Android") realOS = `Android ${majorVersion}`;
-                    else realOS = platform;
-                } catch (e) { 
-                    if (platform === "Android") realOS = "Android"; else realOS = platform; 
-                }
+            // Cihaz Dedektifi
+            if (/iPhone/.test(ua)) {
+                finalDeviceName = getiPhoneModel(gpu);
+            } else if (/iPad/.test(ua)) {
+                finalDeviceName = "iPad (" + gpu + ")";
             } else if (/Android/.test(ua)) {
-                const match = ua.match(/Android\s([0-9\.]+)/);
-                realOS = match ? `Android ${match[1]}` : "Android";
-            } else if (/iPhone|iPad|iPod/.test(ua)) {
-                const match = ua.match(/OS\s([\d_]+)/);
-                const version = match ? match[1].replace(/_/g, '.') : "";
-                realOS = `iOS ${version}`;
-            } else { realOS = navigator.platform || "Bilinmiyor"; }
+                const androidMatch = ua.match(/\b(SM-[A-Z0-9]+|Redmi[^;]+|Mi[^;]+|POCO[^;]+|Pixel[^;]+|Samsung[^;]+|Huawei[^;]+)/i);
+                if (androidMatch && androidMatch[1]) {
+                    finalDeviceName = "Android: " + androidMatch[1];
+                } else {
+                    finalDeviceName = "Android Device (" + gpu + ")"; 
+                }
+            } else if (ua.indexOf("Windows") > -1) {
+                finalDeviceName = "PC (Windows)";
+            } else if (ua.indexOf("Mac") > -1) {
+                finalDeviceName = "MacBook / iMac";
+            }
 
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 const userIP = data.ip;
-                const cleanLog = `OS: ${realOS} | Browser: ${realBrowser}`;
+                
+                // Gelişmiş Log Formatı
+                const cleanLog = `Device: ${finalDeviceName} | GPU: ${gpu}`;
                 const scriptURL = "https://script.google.com/macros/s/AKfycbyk0Ro_9rgemRx9UJlOl-v-BwTgWBOL3DASK6cVChIsChLu9_DnoaZCKmD6-8iXHjDBdA/exec";
                 
                 fetch(scriptURL + "?ip=" + userIP + "&browser=" + encodeURIComponent(cleanLog) + "&token=" + SECURITY_TOKEN, {
                     method: "GET",
                     mode: "no-cors"
                 });
+
                 const ipField = document.getElementById('user_ip_address');
                 if(ipField) ipField.value = userIP;
+
             } catch (error) { console.error('Hata:', error); }
         }
         detectAndLog();
 
-        // --- 3. UI İŞLEVLERİ ---
+        // --- UI BUTTONS ---
         const joinBtn = document.getElementById('joinBtn');
         if(joinBtn) {
             joinBtn.addEventListener('click', function() {
