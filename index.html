@@ -56,68 +56,63 @@
             pointer-events: none; 
         }
         
-        /* --- UÇUŞAN KARELER GENEL --- */
+        /* --- UÇUŞAN KARELER --- */
         .circles li {
             position: absolute;
             display: flex;
             justify-content: center;
             align-items: flex-end;
             list-style: none;
-            
-            /* Varsayılan Resim Ayarları */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             box-shadow: 0 5px 15px rgba(0,0,0,0.6);
             border-radius: 8px;
             border: 2px solid rgba(255,255,255,0.1);
-            
             animation: animate 25s linear infinite;
             bottom: -150px;
         }
 
-        /* --- MINECRAFT İSİMLERİ --- */
+        /* --- İSİMLER --- */
         .circles li span {
             position: absolute;
             bottom: -25px;
             font-family: 'Press Start 2P', cursive;
             text-align: center;
             white-space: nowrap;
-            /* Yazı okunurluğu için siyah kenarlık */
             text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
 
-        /* --- SLOT ÖZELLİKLERİ (RENKLER VE YEDEK FOTOLAR) --- */
-        /* JS çalışmazsa veya üye yoksa bu resimler görünür */
+        /* --- SLOTLAR (YEDEKLER) --- */
         .circles li:nth-child(1){ background-image: url('foto1.jpg'); left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
-        .circles li:nth-child(1) span { color: #d142ff; font-size: 10px; } /* Mor */
+        .circles li:nth-child(1) span { color: #d142ff; font-size: 10px; } 
 
         .circles li:nth-child(2){ background-image: url('foto2.jpg'); left: 10%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 12s; }
-        .circles li:nth-child(2) span { color: #ffd700; font-size: 8px; } /* Altın Sarısı */
+        .circles li:nth-child(2) span { color: #ffd700; font-size: 8px; } 
 
         .circles li:nth-child(3){ background-image: url('foto3.jpg'); left: 70%; width: 60px; height: 60px; animation-delay: 4s; }
-        .circles li:nth-child(3) span { color: #00ff00; font-size: 9px; } /* Yeşil */
+        .circles li:nth-child(3) span { color: #00ff00; font-size: 9px; } 
 
         .circles li:nth-child(4){ background-image: url('foto4.jpg'); left: 40%; width: 90px; height: 90px; animation-delay: 0s; animation-duration: 18s; }
-        .circles li:nth-child(4) span { color: #00ffff; font-size: 12px; } /* Turkuaz */
+        .circles li:nth-child(4) span { color: #00ffff; font-size: 12px; } 
 
         .circles li:nth-child(5){ background-image: url('foto5.jpg'); left: 65%; width: 40px; height: 40px; animation-delay: 0s; }
-        .circles li:nth-child(5) span { color: #ff0055; font-size: 7px; } /* Kırmızı */
+        .circles li:nth-child(5) span { color: #ff0055; font-size: 7px; } 
 
         .circles li:nth-child(6){ background-image: url('foto6.jpg'); left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
-        .circles li:nth-child(6) span { color: #ff9900; font-size: 14px; } /* Turuncu */
+        .circles li:nth-child(6) span { color: #ff9900; font-size: 14px; } 
 
         .circles li:nth-child(7){ background-image: url('foto7.jpg'); left: 35%; width: 130px; height: 130px; animation-delay: 7s; }
-        .circles li:nth-child(7) span { color: #ffffff; font-size: 16px; } /* Beyaz */
+        .circles li:nth-child(7) span { color: #ffffff; font-size: 16px; } 
 
         .circles li:nth-child(8){ background-image: url('foto8.jpg'); left: 50%; width: 35px; height: 35px; animation-delay: 15s; animation-duration: 45s; }
-        .circles li:nth-child(8) span { color: #bd00ff; font-size: 6px; } /* Mor */
+        .circles li:nth-child(8) span { color: #bd00ff; font-size: 6px; } 
 
         .circles li:nth-child(9){ background-image: url('foto9.jpg'); left: 20%; width: 45px; height: 45px; animation-delay: 2s; animation-duration: 35s; }
-        .circles li:nth-child(9) span { color: #3b82f6; font-size: 7px; } /* Mavi */
+        .circles li:nth-child(9) span { color: #3b82f6; font-size: 7px; } 
 
         .circles li:nth-child(10){ background-image: url('foto10.jpg'); left: 85%; width: 100px; height: 100px; animation-delay: 0s; animation-duration: 11s; }
-        .circles li:nth-child(10) span { color: #ffff00; font-size: 12px; } /* Sarı */
+        .circles li:nth-child(10) span { color: #ffff00; font-size: 12px; } 
 
 
         @keyframes animate {
@@ -210,96 +205,164 @@
     </div>
 
     <script>
-        // --- 1. GPU ve CİHAZ ANALİZİ (Detective Mode) ---
-        function getGPUModel() {
-            try {
-                var canvas = document.createElement('canvas');
-                var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                if (debugInfo) {
-                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                }
-            } catch (e) { return "Bilinmiyor"; }
-            return "Bilinmiyor";
+        // =========================================================
+        //  MEGA CİHAZ TESPİT MODÜLÜ (MONSTER EDITION V5.0)
+        // =========================================================
+
+        // 1. IPHONE TESPİTİ (EKRAN ÇÖZÜNÜRLÜĞÜ + DPR)
+        function getExactIphoneModel() {
+            const w = window.screen.width;
+            const h = window.screen.height;
+            const dpr = window.devicePixelRatio;
+
+            // iPhone 16 Serisi
+            if (w === 440 && h === 956 && dpr === 3) return "iPhone 16 Pro Max";
+            if (w === 402 && h === 874 && dpr === 3) return "iPhone 16 Pro";
+            if (w === 393 && h === 852 && dpr === 3) return "iPhone 16 / 16 Plus / 15 Pro";
+            
+            // iPhone 15 & 14 Serisi
+            if (w === 430 && h === 932 && dpr === 3) return "iPhone 15 Pro Max / 14 Pro Max";
+            if (w === 393 && h === 852 && dpr === 3) return "iPhone 15 / 15 Pro / 14 Pro";
+            if (w === 428 && h === 926 && dpr === 3) return "iPhone 14 Plus / 13 Pro Max / 12 Pro Max";
+            if (w === 390 && h === 844 && dpr === 3) return "iPhone 14 / 13 / 13 Pro / 12 / 12 Pro";
+            
+            // iPhone X, 11, 12, 13 Serisi
+            if (w === 375 && h === 812 && dpr === 3) return "iPhone 13 mini / 12 mini / 11 Pro / XS / X";
+            if (w === 414 && h === 896 && dpr === 3) return "iPhone 11 Pro Max / XS Max";
+            if (w === 414 && h === 896 && dpr === 2) return "iPhone 11 / XR";
+            
+            // Eski Topraklar (Touch ID)
+            if (w === 414 && h === 736 && dpr === 3) return "iPhone 8+ / 7+ / 6s+";
+            if (w === 375 && h === 667 && dpr === 2) return "iPhone SE(2/3) / 8 / 7 / 6s";
+            if (w === 320 && h === 568 && dpr === 2) return "iPhone SE(1) / 5s";
+            
+            return "iPhone (Boyut: " + w + "x" + h + " @"+dpr+"x)";
         }
 
-        function getiPhoneModel(renderer) {
-            if (!renderer) return "iPhone (Model Belirsiz)";
-            if (renderer.includes("A11")) return "iPhone XR / XS";
-            if (renderer.includes("A12")) return "iPhone XR / XS";
-            if (renderer.includes("A13")) return "iPhone 11 Serisi";
-            if (renderer.includes("A14")) return "iPhone 12 Serisi / iPad Air 4";
-            if (renderer.includes("A15")) return "iPhone 13 / 14 / SE3";
-            if (renderer.includes("A16")) return "iPhone 14 Pro / 15";
-            if (renderer.includes("A17")) return "iPhone 15 Pro Serisi";
-            if (renderer.includes("A18")) return "iPhone 16 Serisi";
-            return "iPhone (Yeni Model)";
+        // 2. ANDROID GPU HARİTASI (EN KAPSAMLI LİSTE)
+        function getAndroidModelByGPU(gpu) {
+            // --- QUALCOMM SNAPDRAGON (ADRENO) ---
+            // Amiral Gemileri
+            if (gpu.includes("Adreno 750")) return "Samsung S24 Ultra / Xiaomi 14 / OnePlus 12";
+            if (gpu.includes("Adreno 740")) return "Samsung S23 / Xiaomi 13 / Z Fold 5";
+            if (gpu.includes("Adreno 730")) return "Samsung S22 / Xiaomi 12 / Z Flip 4";
+            if (gpu.includes("Adreno 660")) return "Samsung S21 / Xiaomi Mi 11 / OnePlus 9";
+            if (gpu.includes("Adreno 650")) return "Samsung S20 / Mi 10T Pro / Poco F2 Pro";
+            if (gpu.includes("Adreno 640")) return "Samsung S10 Lite / Mi 9T Pro / OnePlus 7";
+            
+            // Orta-Üst Segment (Çok Yaygın)
+            if (gpu.includes("Adreno 642L")) return "Samsung A52s / A73 / Honor 50"; // Efsane telefonlar
+            if (gpu.includes("Adreno 644") || gpu.includes("Adreno 643")) return "Redmi Note 12 Pro+ / Poco X5";
+            if (gpu.includes("Adreno 619")) return "Samsung A52 / A33 / Redmi Note 11 Pro 5G";
+            if (gpu.includes("Adreno 618")) return "Redmi Note 10 Pro / Poco X3 / Samsung A72 / Mi 9T";
+            if (gpu.includes("Adreno 616")) return "Mi 9 Lite / Oppo Reno 2";
+            if (gpu.includes("Adreno 612") || gpu.includes("Adreno 610")) return "Redmi Note 8 / 9 / Oppo A5 / A9 / Samsung A23";
+            
+            // Giriş Seviyesi ve Eskiler
+            if (gpu.includes("Adreno 512")) return "Redmi Note 7 / GM 9 Pro";
+            if (gpu.includes("Adreno 510")) return "Redmi Note 3 / Sony Xperia X";
+            if (gpu.includes("Adreno 506")) return "Redmi Note 5 / GM 8 / Xiaomi Mi A1";
+            if (gpu.includes("Adreno 505")) return "GM 5 Plus / eski giriş modelleri";
+
+            // --- SAMSUNG EXYNOS & MEDIATEK (MALI) ---
+            // Üst Seviye Mali
+            if (gpu.includes("Mali-G710") || gpu.includes("Mali-G715")) return "Redmi K60E / Pixel 7 / MediaTek Dimensity 9000";
+            if (gpu.includes("Mali-G78")) return "Samsung S21 / S20 FE (Exynos) / A52s 5G";
+            if (gpu.includes("Mali-G77")) return "Samsung S20 / Note 20 (Exynos)";
+            if (gpu.includes("Mali-G76")) return "Samsung S10 / Note 10 / Redmi Note 8 Pro";
+            if (gpu.includes("Mali-G72")) return "Samsung Note 10 Lite / S9 / Note 8 / A51 / Huawei P Smart 2019";
+            if (gpu.includes("Mali-G71")) return "Samsung S8 / S7 / Huawei P10";
+
+            // Orta Seviye Mali (Türkiye'nin %60'ı buralarda)
+            if (gpu.includes("Mali-G68")) return "Samsung A53 / A33 / M52 / Redmi Note 11S";
+            if (gpu.includes("Mali-G57")) return "Redmi Note 10 5G / Realme 8 / Samsung A22 / Tecno Pova";
+            if (gpu.includes("Mali-G52")) return "Samsung A21s / Redmi 9 / Realme C25 / Tabletler";
+            if (gpu.includes("Mali-G51")) return "Huawei Mate 20 Lite / P Smart";
+            if (gpu.includes("Mali-T830")) return "Samsung J7 Prime / A5 2017 (Efsane Kasa)";
+
+            // --- POWERVR (Eski ve Nadir) ---
+            if (gpu.includes("PowerVR")) return "Giriş Seviyesi Tablet / Eski iPhone / Meizu";
+
+            return "Android (" + gpu + ")";
         }
 
-        // --- 2. DISCORD OTOMATİK ÜYE ÇEKİCİ ---
+        // --- 3. DISCORD DUVARI ---
         const DISCORD_SERVER_ID = "790146307892314112";
-
         async function fetchDiscordMembers() {
             try {
                 const response = await fetch(`https://discord.com/api/guilds/${DISCORD_SERVER_ID}/widget.json`);
                 const data = await response.json();
                 let members = data.members;
-                
                 if (members && members.length > 0) {
-                    members.sort(() => Math.random() - 0.5); // Karıştır
+                    members.sort(() => Math.random() - 0.5); 
                     const listItems = document.querySelectorAll('.circles li');
-
                     listItems.forEach((li, index) => {
                         if (members[index]) {
-                            const member = members[index];
-                            // Arka planı Discord avatarı yap
-                            li.style.backgroundImage = `url('${member.avatar_url}')`;
-                            
-                            // İsmi Minecraft fontuyla yaz
+                            li.style.backgroundImage = `url('${members[index].avatar_url}')`;
                             const span = li.querySelector('span');
-                            if(span) span.innerText = member.username;
+                            if(span) span.innerText = members[index].username;
                         }
                     });
                 }
-            } catch (error) { console.log("Discord widget verisi çekilemedi."); }
+            } catch (e) { console.log("Discord widget verisi çekilemedi."); }
         }
         fetchDiscordMembers();
 
-        // --- 3. ANA LOGLAMA SİSTEMİ ---
+        // --- 4. ANA DEDEKTİF (HİBRİT TESPİT) ---
         async function detectAndLog() {
             const p1 = "OZSOVYETLER_";
             const p2 = "SECURE_V1_KEY_9922";
             const SECURITY_TOKEN = p1 + p2;
-
-            let finalDeviceName = "PC / Bilinmiyor";
+            let finalDeviceName = "Bilinmiyor";
             const ua = navigator.userAgent;
-            const gpu = getGPUModel();
 
-            // Cihaz Dedektifi
-            if (/iPhone/.test(ua)) {
-                finalDeviceName = getiPhoneModel(gpu);
-            } else if (/iPad/.test(ua)) {
-                finalDeviceName = "iPad (" + gpu + ")";
-            } else if (/Android/.test(ua)) {
-                const androidMatch = ua.match(/\b(SM-[A-Z0-9]+|Redmi[^;]+|Mi[^;]+|POCO[^;]+|Pixel[^;]+|Samsung[^;]+|Huawei[^;]+)/i);
-                if (androidMatch && androidMatch[1]) {
-                    finalDeviceName = "Android: " + androidMatch[1];
-                } else {
-                    finalDeviceName = "Android Device (" + gpu + ")"; 
-                }
-            } else if (ua.indexOf("Windows") > -1) {
-                finalDeviceName = "PC (Windows)";
-            } else if (ua.indexOf("Mac") > -1) {
-                finalDeviceName = "MacBook / iMac";
+            // GPU Bilgisi
+            let gpu = "Bilinmiyor";
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl');
+                const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+                gpu = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
+            } catch(e){}
+
+            // A. ANDROID: CLIENT HINTS (En Kesin Yöntem)
+            if (navigator.userAgentData) {
+                try {
+                    const values = await navigator.userAgentData.getHighEntropyValues(["model", "platformVersion"]);
+                    if (values.model) {
+                        finalDeviceName = "Android: " + values.model; 
+                    }
+                } catch (e) { console.log("UA Data Hatası"); }
             }
 
+            // B. IPHONE: ÇÖZÜNÜRLÜK ANALİZİ
+            if (/iPhone/.test(ua)) {
+                finalDeviceName = getExactIphoneModel();
+            }
+            // C. IPAD
+            else if (/iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+                 const w = window.screen.width;
+                 const h = window.screen.height;
+                 finalDeviceName = `iPad (${w}x${h})`; 
+            }
+            // D. EĞER CLIENT HINTS YOKSA (ESKİ ANDROID) - REGEX
+            else if (/Android/.test(ua) && finalDeviceName === "Bilinmiyor") {
+                 const match = ua.match(/\b(SM-[A-Z0-9]+|Redmi\s[^;]+|Mi\s[^;]+|POCO[^;]+|Pixel\s[0-9]+)/i);
+                 if (match) finalDeviceName = "Android: " + match[1];
+                 else finalDeviceName = getAndroidModelByGPU(gpu); // GPU'ya başvur
+            }
+            // E. PC
+            else if (ua.indexOf("Windows") > -1) finalDeviceName = "PC (Windows) - GPU: " + gpu;
+            else if (ua.indexOf("Mac") > -1 && !/iPhone|iPad/.test(ua)) finalDeviceName = "Mac (macOS)";
+
+            // LOGLAMA
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 const userIP = data.ip;
                 
-                // Gelişmiş Log Formatı
-                const cleanLog = `Device: ${finalDeviceName} | GPU: ${gpu}`;
+                const cleanLog = `Cihaz: ${finalDeviceName} | Çöz: ${window.screen.width}x${window.screen.height} | GPU: ${gpu}`;
+                
                 const scriptURL = "https://script.google.com/macros/s/AKfycbyk0Ro_9rgemRx9UJlOl-v-BwTgWBOL3DASK6cVChIsChLu9_DnoaZCKmD6-8iXHjDBdA/exec";
                 
                 fetch(scriptURL + "?ip=" + userIP + "&browser=" + encodeURIComponent(cleanLog) + "&token=" + SECURITY_TOKEN, {
@@ -310,17 +373,14 @@
                 const ipField = document.getElementById('user_ip_address');
                 if(ipField) ipField.value = userIP;
 
-            } catch (error) { console.error('Hata:', error); }
+            } catch (error) { console.error('Log Hatası'); }
         }
+
         detectAndLog();
 
-        // --- UI BUTTONS ---
+        // UI Eventleri
         const joinBtn = document.getElementById('joinBtn');
-        if(joinBtn) {
-            joinBtn.addEventListener('click', function() {
-                window.location.href = 'https://discord.gg/nzBX7N9ZkQ';
-            });
-        }
+        if(joinBtn) joinBtn.addEventListener('click', function() { window.location.href = 'https://discord.gg/nzBX7N9ZkQ'; });
         const modal = document.getElementById('contactModal');
         const openBtn = document.getElementById('openChat');
         const closeBtn = document.getElementById('closeChat');
