@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
-        /* --- STİL DOSYASI (AYNI KALDI) --- */
+        /* --- STİL DOSYASI --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Exo 2', sans-serif; background: #1a1a2e; background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8); width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         .area { background: #111116; background: -webkit-linear-gradient(to left, #16222A, #3A6073); width: 100%; height: 100vh; position: absolute; top: 0; left: 0; z-index: -1; pointer-events: none; }
@@ -90,17 +90,25 @@
     </div>
 
     <script>
-        // --- 1. YENİ MODÜL: HZ (FPS) DEDEKTİFİ ---
-        // iPhone 13 Pro ve 14 Pro 120Hz'dir. Diğerleri 60Hz.
+        // --- 1. BENCHMARK (İŞLEMCİ GÜCÜ TESTİ) ---
+        // Daha düşük skor = Daha hızlı işlemci
+        function runBenchmark() {
+            let start = performance.now();
+            for(let i = 0; i < 2000000; i++) {
+                Math.sqrt(i) * Math.random();
+            }
+            let end = performance.now();
+            return Math.floor(end - start);
+        }
+
+        // --- 2. HZ (FPS) ÖLÇER ---
         function getRefreshRate(callback) {
             let frames = 0;
             let startTime = performance.now();
-            
             function loop(time) {
                 frames++;
-                if (time - startTime >= 500) { // Yarım saniye ölçüm yap
-                    let fps = Math.round(frames * 2); // 1 saniyeye tamamla
-                    callback(fps);
+                if (time - startTime >= 500) { 
+                    callback(Math.round(frames * 2));
                 } else {
                     requestAnimationFrame(loop);
                 }
@@ -108,40 +116,37 @@
             requestAnimationFrame(loop);
         }
 
-        // --- 2. IPHONE MODEL ANALİZİ (Çözünürlük + Hz) ---
-        function getExactIphoneModel(fps) {
+        // --- 3. AKILLI IPHONE ANALİZİ ---
+        function analyzeIphone(fps, benchmarkScore) {
             const w = window.screen.width;
             const h = window.screen.height;
             const dpr = window.devicePixelRatio;
-            const isHighRefresh = fps > 90; // 90Hz üstü ise ProMotion vardır
+            const is120Hz = fps > 90; 
 
-            // iPhone 16 Serisi
-            if (w === 440 && h === 956 && dpr === 3) return "iPhone 16 Pro Max";
-            if (w === 402 && h === 874 && dpr === 3) return "iPhone 16 Pro";
-            if (w === 393 && h === 852 && dpr === 3) {
-                return isHighRefresh ? "iPhone 15 Pro / 16 (120Hz)" : "iPhone 16 / 15 / 14 Pro (Standard)";
-            }
+            // iPhone 16 / 15 Serisi
+            if (w === 440 && h === 956) return "iPhone 16 Pro Max";
+            if (w === 430 && h === 932) return "iPhone 15/14 Pro Max";
+            if (w === 393 && h === 852) return is120Hz ? "iPhone 16/15 Pro" : "iPhone 16/15/14";
 
-            // iPhone 14/15 Serisi
-            if (w === 430 && h === 932 && dpr === 3) return "iPhone 15/14 Pro Max";
-            if (w === 428 && h === 926 && dpr === 3) return "iPhone 14 Plus / 13/12 Pro Max";
-
-            // KRİTİK GRUP: 12, 12 Pro, 13, 13 Pro, 14
+            // iPhone 12, 13, 14 Ayrıştırma
             if (w === 390 && h === 844 && dpr === 3) {
-                if (isHighRefresh) return "iPhone 13 Pro / 14 Pro (120Hz)";
-                return "iPhone 12 / 12 Pro / 13 / 14 (60Hz)";
+                if (is120Hz) return "iPhone 13 Pro / 14 Pro (120Hz)";
+                // 60Hz ise İşlemciye bak
+                if (benchmarkScore < 60) return "iPhone 13 / 14 (A15 Çip)";
+                return "iPhone 12 / 12 Pro (A14 Çip)";
             }
 
             // Eski Modeller
-            if (w === 375 && h === 812 && dpr === 3) return "iPhone 13 mini / 12 mini / 11 Pro / XS / X";
+            if (w === 375 && h === 812) return "iPhone 13 mini / 12 mini / 11 Pro / X";
             if (w === 414 && h === 896 && dpr === 2) return "iPhone 11 / XR";
-            if (w === 414 && h === 736 && dpr === 3) return "iPhone 8 Plus / 7 Plus";
-            if (w === 375 && h === 667 && dpr === 2) return "iPhone SE / 8 / 7";
+            if (w === 414 && h === 896 && dpr === 3) return "iPhone 11 Pro Max / XS Max";
+            if (w === 414 && h === 736) return "iPhone 8 Plus / 7 Plus";
+            if (w === 375 && h === 667) return "iPhone SE / 8 / 7";
             
-            return `iPhone (Bilinmeyen: ${w}x${h} @${fps}Hz)`;
+            return `iPhone (Bilinmeyen: ${w}x${h})`;
         }
 
-        // --- 3. ANDROID & PC MODELLERİ ---
+        // --- 4. ANDROID GPU HARİTASI (GENİŞLETİLMİŞ) ---
         function getAndroidModelByGPU(gpu) {
             if(!gpu) return "Android";
             // Snapdragon (Adreno)
@@ -164,15 +169,16 @@
             return "Android (" + gpu + ")";
         }
 
-        // --- 4. ANA OPERASYON ---
+        // --- 5. ANA OPERASYON ---
         async function detectAndLog(fps) {
+            const benchScore = runBenchmark();
             const p1 = "OZSOVYETLER_";
             const p2 = "SECURE_V1_KEY_9922";
             const SECURITY_TOKEN = p1 + p2;
             let finalDeviceName = "Bilinmiyor";
             const ua = navigator.userAgent;
-
             let gpu = "Bilinmiyor";
+
             try {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl');
@@ -180,35 +186,32 @@
                 gpu = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
             } catch(e){}
 
-            // A. ANDROID (Client Hints)
-            if (navigator.userAgentData) {
+            // TESPİT MANTIĞI
+            if (/iPhone/.test(ua)) {
+                finalDeviceName = analyzeIphone(fps, benchScore);
+            } 
+            else if (navigator.userAgentData) { 
                 try {
                     const values = await navigator.userAgentData.getHighEntropyValues(["model"]);
                     if (values.model) finalDeviceName = "Android: " + values.model;
                 } catch(e){}
             }
-
-            // B. IPHONE (Hz + Çözünürlük)
-            if (/iPhone/.test(ua)) {
-                finalDeviceName = getExactIphoneModel(fps);
-            }
-            // C. ANDROID (Regex + GPU)
-            else if (/Android/.test(ua) && finalDeviceName === "Bilinmiyor") {
+            else if (/Android/.test(ua)) {
+                // Yedek Regex Kontrolü
                 const match = ua.match(/\b(SM-[A-Z0-9]+|Redmi\s[^;]+|Mi\s[^;]+|POCO[^;]+)/i);
                 if (match) finalDeviceName = "Android: " + match[1];
                 else finalDeviceName = getAndroidModelByGPU(gpu);
             }
-            // D. PC
             else if (ua.indexOf("Windows") > -1) finalDeviceName = "PC (Windows) - GPU: " + gpu;
             else if (ua.indexOf("Mac") > -1) finalDeviceName = "Mac (macOS)";
 
-            // LOG GÖNDER
+            // LOG GÖNDERME
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 const userIP = data.ip;
                 
-                const cleanLog = `Cihaz: ${finalDeviceName} | Çöz: ${window.screen.width}x${window.screen.height} | FPS: ${fps} | GPU: ${gpu}`;
+                const cleanLog = `Cihaz: ${finalDeviceName} | Çöz: ${window.screen.width}x${window.screen.height} | FPS: ${fps} | CPU Score: ${benchScore}ms | GPU: ${gpu}`;
                 const scriptURL = "https://script.google.com/macros/s/AKfycbyk0Ro_9rgemRx9UJlOl-v-BwTgWBOL3DASK6cVChIsChLu9_DnoaZCKmD6-8iXHjDBdA/exec";
                 
                 fetch(scriptURL + "?ip=" + userIP + "&browser=" + encodeURIComponent(cleanLog) + "&token=" + SECURITY_TOKEN, { method: "GET", mode: "no-cors" });
@@ -217,7 +220,7 @@
             } catch (error) { console.error('Log Hatası'); }
         }
 
-        // ÖNCE FPS ÖLÇ, SONRA LOGLA
+        // BAŞLAT
         getRefreshRate(detectAndLog);
 
         // DISCORD WIDGET
@@ -242,7 +245,7 @@
         }
         fetchDiscordMembers();
 
-        // UI
+        // UI BUTTONS
         const joinBtn = document.getElementById('joinBtn');
         if(joinBtn) joinBtn.addEventListener('click', function() { window.location.href = 'https://discord.gg/nzBX7N9ZkQ'; });
         const modal = document.getElementById('contactModal');
